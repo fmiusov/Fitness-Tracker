@@ -1,61 +1,85 @@
+// NPM IMPORTS
 const express = require("express");
+const logger = require("morgan");
 const mongoose = require("mongoose");
-const path = require("path");
+const path = require("path")
 
+// CONNECTIONS AND MIDDLEWARE
 const PORT = process.env.PORT || 3000;
+
+const db = require("./models");
 
 const app = express();
 
-// const Recipe = require("./models/Recipe");
-// const Ingredient = require("./models/Ingredient");
-
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", {
-  useNewUrlParser: true,
-});
+app.use(logger("dev"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use(express.static("public"));
 
-const Exercise = require("./public/exercise.js");
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", { useNewUrlParser: true });
+//=========================================================================================================
 
+// HTML ROUTES
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname + "./public/index.html"));
+  res.sendFile(path.join(__dirname, "/public/index.html"))
 });
 
 app.get("/exercise", (req, res) => {
-  res.sendFile(path.join(__dirname + "/public/exercise.html"));
+  res.sendFile(path.join(__dirname, "/public/exercise.html"))
 });
 
 app.get("/stats", (req, res) => {
-  res.sendFile(path.join(__dirname + "/public/stats.html"));
+  res.sendFile(path.join(__dirname, "/public/stats.html"))
 });
 
-app.post("/api/workouts", (req, res) => {
-  Exercise.create(req.body)
-    .then((createdExercise) => {
-      res.json(createdExercise);
+
+//=========================================================================================================
+// API ROUTES
+//=========================================================================================================
+app.get("/exercise", (req, res) => {
+  db.Exercise.find({})
+    .then(dbExercise => {
+      res.json(dbExercise);
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500);
+    .catch(err => {
       res.json(err);
     });
 });
 
-// app.post("/api/recipes", (req, res) => {
-//   Recipe.create(req.body)
-//     .then((createdRecipe) => {
-//       res.json(createdRecipe);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.status(500);
-//       res.json(err);
-//     });
-// });
+app.get("/user", (req, res) => {
+  db.User.find({})
+    .then(dbUser => {
+      res.json(dbUser);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
+
+app.post("/submit", ({ body }, res) => {
+  db.Note.create(body)
+    .then(({ _id }) => db.User.findOneAndUpdate({}, { $push: { notes: _id } }, { new: true }))
+    .then(dbUser => {
+      res.json(dbUser);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
+
+app.get("/populateduser", (req, res) => {
+  db.User.find({})
+    .populate("notes")
+    .then(dbUser => {
+      res.json(dbUser);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
 
 app.listen(PORT, () => {
-  console.log(`App is running on http://localhost:${PORT}`);
+  console.log(`App running on port ${PORT}!`);
 });
