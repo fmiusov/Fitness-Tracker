@@ -59,6 +59,20 @@ app.post("/api/workouts", (req, res) => {
       res.json(err);
     });
 });
+
+app.put("/api/workouts/:id", ({ body, params }, res) => {
+  db.Workout.findByIdAndUpdate(
+    params.id,
+    { $push: { exercises: body } },
+    { new: true, runValidators: true }
+  )
+    .then((dbWorkout) => {
+      res.json(dbWorkout);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
 //=========================================================================================================
 
 app.listen(PORT, () => {
