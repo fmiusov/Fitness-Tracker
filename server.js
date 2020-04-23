@@ -52,8 +52,8 @@ app.get("/api/workouts", (req, res) => {
 
 app.post("/api/workouts", (req, res) => {
   db.Workout.create({})
-    .then((dbWorkout) => {
-      res.json(dbWorkout);
+    .then((dbWorkouts) => {
+      res.json(dbWorkouts);
     })
     .catch((err) => {
       res.json(err);
@@ -66,8 +66,19 @@ app.put("/api/workouts/:id", ({ body, params }, res) => {
     { $push: { exercises: body } },
     { new: true, runValidators: true }
   )
-    .then((dbWorkout) => {
-      res.json(dbWorkout);
+    .then((dbWorkouts) => {
+      res.json(dbWorkouts);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+});
+
+app.get("/api/workouts/range", (req, res) => {
+  db.Workout.find({})
+    .limit(7)
+    .then((dbWorkouts) => {
+      res.json(dbWorkouts);
     })
     .catch((err) => {
       res.json(err);
