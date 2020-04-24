@@ -75,15 +75,15 @@ app.put("/api/workouts/:id", ({ body, params }, res) => {
     });
 });
 
-// app.get("/api/workouts/range", (req, res) => {
-//   db.Workout.find("range")
-//   .then((dbWorkouts) => {
-//     res.json(dbWorkouts);
-//   })
-//   .catch((err) => {
-//     res.json(err);
-//   });
-// });
+app.get("/api/workouts/range", (req, res) => {
+  db.Workout.find({})
+  .then((dbWorkouts) => {
+    res.json(dbWorkouts);
+  })
+  .catch((err) => {
+    res.json(err);
+  });
+});
 
 //=========================================================================================================
 
