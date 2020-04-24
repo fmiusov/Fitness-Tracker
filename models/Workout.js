@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
-
+// const opts = { toJSON: { virtuals: true } };
 const WorkoutSchema = new Schema({
   day: {
     type: Date,
@@ -12,16 +12,16 @@ const WorkoutSchema = new Schema({
       type: {
         type: String,
         trim: true,
-        required: "Enter exercise type",
+        required: true,
       },
       name: {
         type: String,
         trim: true,
-        required: "Enter exercise name",
+        required: true,
       },
       duration: {
         type: Number,
-        required: "Enter exercise duration (number of minutes)",
+        required: true,
       },
       weight: {
         type: Number,
@@ -38,6 +38,14 @@ const WorkoutSchema = new Schema({
     },
   ],
 });
+
+// My thought process for virtual (currently breaks app to implement)
+//https://stackoverflow.com/questions/34470352/mongoose-take-sum-of-number-and-add-new-property-to-same-document
+// WorkoutSchema.virtual("range").get(() => {
+//   return this.duration.reduce(function (currentValue, previousValue) { //trying to use reduce to add up all the durations in the array
+//     return parseInt(currentValue + previousValue);
+//   });
+// });
 
 const Workout = mongoose.model("Workout", WorkoutSchema);
 
